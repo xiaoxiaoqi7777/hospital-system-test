@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.hospital.mapper.TriageRecordMapper">
+
+    <insert id="insert">
+        INSERT INTO triage_record(patient_name,patient_phone,patient_age,gender,department_id,doctor_id,symptom,triage_status,id_card,triage_fee)
+        VALUES(#{patientName},#{patientPhone},#{patientAge},#{gender},#{departmentId},#{doctorId},#{symptom},#{triageStatus},#{idCard},#{triageFee})
+    </insert>
+
+    <select id="selectByPhone" resultType="com.etc.hospital.entity.TriageRecord">
+        SELECT * FROM triage_record WHERE patient_phone = #{phone} AND is_delete = 0
+    </select>
+
+    <select id="selectById" resultType="com.etc.hospital.entity.TriageRecord">
+        SELECT * FROM triage_record WHERE id = #{id}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE triage_record SET triage_status = #{status} WHERE id = #{id}
+    </update>
+
+    <select id="selectPage" resultType="com.etc.hospital.entity.TriageRecord">
+        SELECT * FROM triage_record WHERE is_delete = 0
+        <if test="name != null and name != ''">
+            AND patient_name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="status != null">
+            AND triage_status = #{status}
+        </if>
+        LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="selectCount" resultType="int">
+        SELECT COUNT(*) FROM triage_record WHERE is_delete = 0
+        <if test="name != null and name != ''">
+            AND patient_name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="status != null">
+            AND triage_status = #{status}
+        </if>
+    </select>
+
+    <!--退号更新状态为取消-->
+    <update id="cancelTriage">
+        UPDATE triage_record SET triage_status=5 WHERE id=#{id} AND is_delete=0
+    </update>
+    <!--根据医生+日期统计当日所有分诊数据-->
+    <select id="listByDoctorAndDate" resultType="com.etc.hospital.entity.TriageRecord">
+        SELECT * FROM triage_record WHERE doctor_id=#{docId}  AND is_delete=0
+    </select>
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.hospital.mapper.PatientMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="patId" keyColumn="pat_id">
+        INSERT INTO patient(pat_name,id_card,phone,age,has_triage,is_delete)
+        VALUES(#{patName},#{idCard},#{phone},#{age},#{hasTriage},#{isDelete})
+    </insert>
+
+    <update id="updateById">
+        UPDATE patient
+        <set>
+            <if test="patName != null">pat_name = #{patName},</if>
+            <if test="idCard != null">id_card = #{idCard},</if>
+        </set>
+        WHERE pat_id = #{patId} AND is_delete=0
+    </update>
+
+    <select id="selectById" resultType="com.etc.hospital.entity.Patient">
+        SELECT * FROM patient WHERE pat_id=#{patId} AND is_delete=0
+    </select>
+
+    <select id="selectByIdCard" resultType="com.etc.hospital.entity.Patient">
+        SELECT * FROM patient WHERE id_card=#{idCard} AND is_delete=0
+    </select>
+
+    <update id="logicDel">
+        UPDATE patient SET is_delete=1 WHERE pat_id=#{patId}
+    </update>
+
+<!--    <select id="selectPage" resultType="com.etc.hospital.entity.Patient">-->
+<!--        SELECT * FROM patient WHERE is_delete=0-->
+<!--        <if test="name != null and name != ''">-->
+<!--            AND pat_name LIKE CONCAT('%',#{name},'%')-->
+<!--        </if>-->
+<!--    </select>-->
+
+    <select id="selectPage" resultType="com.etc.hospital.entity.Patient">
+        SELECT * FROM patient
+        <where>
+            <if test="name != null and name != ''">
+                pat_name LIKE CONCAT('%', #{name}, '%')
+            </if>
+        </where>
+        LIMIT #{offset}, #{pageSize}
+    </select>
+</mapper>

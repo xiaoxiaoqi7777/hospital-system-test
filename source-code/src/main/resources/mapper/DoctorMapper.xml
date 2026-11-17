@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.hospital.mapper.DoctorMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="docId" keyColumn="doc_id">
+        INSERT INTO doctor(doc_name,doc_phone,dept_id,job_level,status,is_delete)
+        VALUES(#{docName},#{docPhone},#{deptId},#{jobLevel},#{status},#{isDelete})
+    </insert>
+    <update id="updateById">
+        UPDATE doctor
+        <set>
+            <if test="docName!=null">doc_name=#{docName},</if>
+            <if test="deptId!=null">dept_id=#{deptId},</if>
+            <if test="jobLevel!=null">job_level=#{jobLevel},</if>
+        </set>
+        WHERE doc_id=#{docId} AND is_delete=0
+    </update>
+    <select id="selectById" resultType="com.etc.hospital.entity.Doctor">
+        SELECT * FROM doctor WHERE doc_id=#{docId} AND is_delete=0
+    </select>
+    <select id="selectPage" resultType="com.etc.hospital.entity.Doctor">
+        SELECT * FROM doctor WHERE is_delete=0
+        <if test="name!=null and name!=''">AND doc_name LIKE CONCAT('%',#{name},'%')</if>
+        <if test="level!=null">AND job_level=#{level}</if>
+    </select>
+    <!--DoctorMapper.xml-->
+    <update id="updateStatus">
+        UPDATE doctor SET status=#{sta} WHERE doc_id=#{id} AND is_delete=0
+    </update>
+</mapper>
